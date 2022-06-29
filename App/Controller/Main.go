@@ -1,6 +1,6 @@
-package Main
+package Gopulsa
 
-import App "https://github.com/Roiful/Gopulsa/App"
+import App "github.com/Roiful/Gopulsa/App"
 
 func main() {
 	App.Run()
