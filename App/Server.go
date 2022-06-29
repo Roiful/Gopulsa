@@ -18,7 +18,7 @@ func (server *Server) Initialize() {
 	fmt.Println("Selamat Datang di GoPulsa")
 
 	server.Router = mux.NewRouter()
-}
+	server.InitializeRouter()
 
 func (server *Server) Run(addr string) {
 	fmt.Printf("Listening to port %s", addr)
