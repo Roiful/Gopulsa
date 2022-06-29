@@ -1,4 +1,4 @@
-module github.com/Roiful/PulsaGO
+module github.com/Roiful/Gopulsa
 
 go 1.17
 
