@@ -15,10 +15,9 @@ type Server struct {
 }
 
 func (server *Server) Initialize() {
-	fmt.Println("Selamat Datang di PulsaGO ")
+	fmt.Println("Selamat Datang di GoPulsa")
 
-	server.Router = mux.newRouter()
-
+	server.Router = mux.NewRouter()
 }
 
 func (server *Server) Run(addr string) {
