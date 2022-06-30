@@ -20,9 +20,24 @@ type AppConfig struct {
 	AppEnv  string
 	AppPort string
 }
+type DBConfig struct {
+	DBHOST     string
+	DBUSER     string
+	DBPASSWORD string
+	DBNAME     string
+	DBPORT     string
+}
 
 func (server *Server) Initialize(AppConfig AppConfig) {
 	fmt.Println("Selamat Datang di GoPulsa" + AppConfig.Appname)
+
+	var err error
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=Asia/Jakarta", "localhost", "Roiful", "password", "Roiful_Gopulsadb", "5432")
+	server.DB, err = gorm.Open(Postgres.Open(dsn), &gorm.Config{})
+
+	if err != nil {
+		panic("gagal koneksi ke database")
+	}
 
 	server.Router = mux.NewRouter()
 	server.InitializeRouter()
