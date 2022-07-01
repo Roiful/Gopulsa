@@ -6,9 +6,11 @@ import (
 	"net/http"
 	"os"
 
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
-	"gorm.io/driver/postgres"
+
+	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
@@ -27,19 +29,17 @@ type DBConfig struct {
 	DBPassword string
 	DBName     string
 	DBPort     string
+	DBDriver   string
 }
 
-func (server *Server) Initialize(AppConfig AppConfig) {
+func (server *Server) Initialize(AppConfig AppConfig, DBConfig DBConfig) {
 	fmt.Println("Selamat Datang di GoPulsa" + AppConfig.Appname)
-
 	var err error
-	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=Asia/Jakarta", "localhost", "Roiful", "password", "Roiful_Gopulsadb", "5432")
-	server.DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
-
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", DBConfig.DBUser, DBConfig.DBPassword, DBConfig.DBHost, DBConfig.DBPort, DBConfig.DBName)
+	server.DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
-		panic("gagal koneksi ke database")
+		panic("Yah gagal konek")
 	}
-
 	server.Router = mux.NewRouter()
 	server.InitializeRouter()
 }
@@ -70,12 +70,12 @@ func Run() {
 	AppConfig.AppEnv = Getenv("APP_ENV", "development")
 	AppConfig.AppPort = Getenv("APP_PORT", "9000")
 
-	DBConfig.DBHost = Getenv("DB_HOST", "localhost")
-	DBConfig.DBUser = Getenv("DB_USER", "user")
-	DBConfig.DBPassword = Getenv("DB_PASSWORD", "password")
-	DBConfig.DBName = Getenv("DB_NAME", "dbname")
-	DBConfig.DBPort = Getenv("DB_PORT", "5432")
+	DBConfig.DBHost = Getenv("DB_HOST", "127.0.0.1")
+	DBConfig.DBUser = Getenv("DB_USER", "")
+	DBConfig.DBPassword = Getenv("DB_PASSWORD", "")
+	DBConfig.DBName = Getenv("DB_NAME", "DBgopulsa")
+	DBConfig.DBPort = Getenv("DB_PORT", "3306")
 
-	server.Initialize(AppConfig)
+	server.Initialize(AppConfig, DBConfig)
 	server.Run(":" + AppConfig.AppPort)
 }
