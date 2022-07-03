@@ -11,7 +11,6 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/urfave/cli"
 	"gorm.io/driver/mysql"
-	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
@@ -35,10 +34,10 @@ type DBConfig struct {
 	DBDriver   string
 }
 
-func (server *Server) Initialize(appConfig AppConfig, dbConfig DBConfig) {
-	fmt.Println("Welcome to " + appConfig.AppName)
+func (server *Server) Initialize(AppConfig AppConfig, DBConfig DBConfig) {
+	fmt.Println("Welcome to " + AppConfig.AppName)
 
-	server.initializeDB(dbConfig)
+	server.initializeDB(DBConfig)
 	server.initializeRoutes()
 }
 
@@ -47,19 +46,15 @@ func (server *Server) Run(addr string) {
 	log.Fatal(http.ListenAndServe(addr, server.Router))
 }
 
-func (server *Server) initializeDB(dbConfig DBConfig) {
+func (server *Server) initializeDB(DBConfig DBConfig) {
 	var err error
-	if dbConfig.DBDriver == "mysql" {
-		dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", dbConfig.DBUser, dbConfig.DBPassword, dbConfig.DBHost, dbConfig.DBPort, dbConfig.DBName)
-		server.DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
-	} else {
-		dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=Asia/Jakarta", dbConfig.DBHost, dbConfig.DBUser, dbConfig.DBPassword, dbConfig.DBName, dbConfig.DBPort)
-		server.DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
-	}
-
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", DBConfig.DBUser, DBConfig.DBPassword, DBConfig.DBHost, DBConfig.DBPort, DBConfig.DBName)
+	server.DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
-		panic("Failed on connecting to the database server")
+		panic("Yah gagal konek")
 	}
+	server.Router = mux.NewRouter()
+	server.initializeRoutes()
 }
 
 func (server *Server) dbMigrate() {
@@ -74,9 +69,8 @@ func (server *Server) dbMigrate() {
 	fmt.Println("Database migrated successfully.")
 }
 
-func (server *Server) InitCommands(config AppConfig, dbConfig DBConfig) {
-	server.initializeDB(dbConfig)
-
+func (server *Server) InitCommands(config AppConfig, DBConfig DBConfig) {
+	server.initializeDB(DBConfig)
 	cmdApp := cli.NewApp()
 	cmdApp.Commands = []cli.Command{
 		{

@@ -18,7 +18,7 @@ func GetEnv(key, fallback string) string {
 	return fallback
 }
 func Run() {
-	var Server = controllers.Server{}
+	var server = controllers.Server{}
 	var AppConfig = controllers.AppConfig{}
 	var DBConfig = controllers.DBConfig{}
 
@@ -27,7 +27,7 @@ func Run() {
 		log.Fatalf("Error on loading .env file")
 	}
 
-	AppConfig.Appname = GetEnv("APP_NAME", "GOpulsa")
+	AppConfig.AppName = GetEnv("APP_NAME", "GOpulsa")
 	AppConfig.AppEnv = GetEnv("APP_ENV", "development")
 	AppConfig.AppPort = GetEnv("APP_PORT", "9000")
 
